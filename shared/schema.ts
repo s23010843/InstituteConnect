@@ -1,75 +1,106 @@
-import { pgTable, text, serial, integer, boolean, timestamp } from "drizzle-orm/pg-core";
-import { createInsertSchema } from "drizzle-zod";
-import { z } from "zod";
 
-export const users = pgTable("users", {
-  id: serial("id").primaryKey(),
-  email: text("email").notNull().unique(),
-  name: text("name").notNull(),
-  avatar: text("avatar"),
-  provider: text("provider").notNull(), // 'google', 'apple', 'email'
-  providerId: text("provider_id"),
-  isStudent: boolean("is_student").default(false),
-  isFaculty: boolean("is_faculty").default(false),
-  isAdmin: boolean("is_admin").default(false),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  avatar?: string;
+  provider: 'google' | 'apple';
+  providerId: string;
+  isStudent: boolean;
+  isFaculty: boolean;
+  isAdmin: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
 
-export const sessions = pgTable("sessions", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").references(() => users.id).notNull(),
-  token: text("token").notNull().unique(),
-  expiresAt: timestamp("expires_at").notNull(),
-  createdAt: timestamp("created_at").defaultNow(),
-});
+export interface Session {
+  id: string;
+  userId: string;
+  token: string;
+  expiresAt: Date;
+  createdAt: Date;
+}
 
-export const programs = pgTable("programs", {
-  id: serial("id").primaryKey(),
-  name: text("name").notNull(),
-  description: text("description").notNull(),
-  duration: text("duration").notNull(),
-  degree: text("degree").notNull(),
-  icon: text("icon").notNull(),
-  color: text("color").notNull(),
-  isActive: boolean("is_active").default(true),
-});
+export interface Program {
+  id: string;
+  name: string;
+  description: string;
+  duration: string;
+  degree: string;
+  department: string;
+  credits: number;
+  tuition: number;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
 
-export const faculty = pgTable("faculty", {
-  id: serial("id").primaryKey(),
-  name: text("name").notNull(),
-  department: text("department").notNull(),
-  specialization: text("specialization").notNull(),
-  email: text("email").notNull(),
-  avatar: text("avatar"),
-  bio: text("bio"),
-  isActive: boolean("is_active").default(true),
-});
+export interface Faculty {
+  id: string;
+  name: string;
+  title: string;
+  department: string;
+  email: string;
+  phone?: string;
+  bio: string;
+  expertise: string[];
+  education: string[];
+  avatar?: string;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
 
-export const insertUserSchema = createInsertSchema(users).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-});
+export interface Contact {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  subject: string;
+  message: string;
+  status: 'new' | 'in-progress' | 'resolved';
+  createdAt: Date;
+}
 
-export const insertSessionSchema = createInsertSchema(sessions).omit({
-  id: true,
-  createdAt: true,
-});
+export interface InsertUser {
+  email: string;
+  name: string;
+  avatar?: string;
+  provider: 'google' | 'apple';
+  providerId: string;
+  isStudent?: boolean;
+  isFaculty?: boolean;
+  isAdmin?: boolean;
+}
 
-export const insertProgramSchema = createInsertSchema(programs).omit({
-  id: true,
-});
+export interface InsertSession {
+  userId: string;
+  token: string;
+  expiresAt: Date;
+}
 
-export const insertFacultySchema = createInsertSchema(faculty).omit({
-  id: true,
-});
+export interface InsertContact {
+  firstName: string;
+  lastName: string;
+  email: string;
+  subject: string;
+  message: string;
+}
 
-export type InsertUser = z.infer<typeof insertUserSchema>;
-export type User = typeof users.$inferSelect;
-export type InsertSession = z.infer<typeof insertSessionSchema>;
-export type Session = typeof sessions.$inferSelect;
-export type InsertProgram = z.infer<typeof insertProgramSchema>;
-export type Program = typeof programs.$inferSelect;
-export type InsertFaculty = z.infer<typeof insertFacultySchema>;
-export type Faculty = typeof faculty.$inferSelect;
+// Validation schemas for Firebase data
+export const insertUserSchema = {
+  email: 'string',
+  name: 'string',
+  avatar: 'string?',
+  provider: 'google | apple',
+  providerId: 'string',
+  isStudent: 'boolean?',
+  isFaculty: 'boolean?',
+  isAdmin: 'boolean?',
+};
+
+export const insertSessionSchema = {
+  userId: 'string',
+  token: 'string',
+  expiresAt: 'Date',
+};

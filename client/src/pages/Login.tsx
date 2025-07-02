@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useLocation } from "wouter";
+import { Link, useLocation } from "wouter";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/hooks/use-auth";
 import { Chrome, Apple, ArrowLeft } from "lucide-react";
-import { Link } from "wouter";
+
 
 export default function LoginPage() {
   const [, setLocation] = useLocation();
@@ -46,7 +46,7 @@ export default function LoginPage() {
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to Home
         </Link>
-        
+
         <Card className="shadow-lg">
           <CardHeader className="text-center">
             <CardTitle className="text-2xl font-bold text-gray-900">Welcome Back</CardTitle>
@@ -55,38 +55,7 @@ export default function LoginPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            {/* Social Login Buttons */}
-            <div className="space-y-3">
-              <Button
-                onClick={handleGoogleSignIn}
-                disabled={isLoading}
-                className="w-full bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-colors"
-                variant="outline"
-              >
-                <Chrome className="h-4 w-4 mr-2" />
-                Continue with Google
-              </Button>
-              
-              <Button
-                onClick={handleAppleSignIn}
-                disabled={isLoading}
-                className="w-full bg-black text-white hover:bg-gray-800 transition-colors"
-              >
-                <Apple className="h-4 w-4 mr-2" />
-                Continue with Apple
-              </Button>
-            </div>
-
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <Separator className="w-full" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-white px-2 text-gray-500">Or continue with email</span>
-              </div>
-            </div>
-
-            {/* Email Login Form */}
+            
             <form onSubmit={handleEmailLogin} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
@@ -99,7 +68,7 @@ export default function LoginPage() {
                   required
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
                 <Input
@@ -111,7 +80,7 @@ export default function LoginPage() {
                   required
                 />
               </div>
-              
+
               <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white">
                 Sign In
               </Button>

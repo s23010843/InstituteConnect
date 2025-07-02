@@ -83,3 +83,16 @@ export function serveStatic(app: Express) {
     res.sendFile(path.resolve(distPath, "index.html"));
   });
 }
+
+export async function createServer(app: Express) {
+  const { createServer: createHttpServer } = await import("http");
+  const server = createHttpServer(app);
+
+  if (process.env.NODE_ENV === "development") {
+    await setupVite(app, server);
+  } else {
+    serveStatic(app);
+  }
+
+  return server;
+}

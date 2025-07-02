@@ -23,7 +23,7 @@ export default function Navigation() {
       window.location.href = `/#${sectionId}`;
       return;
     }
-    
+
     const element = document.getElementById(sectionId);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });

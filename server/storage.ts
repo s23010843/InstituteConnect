@@ -1,68 +1,78 @@
-import { users, sessions, programs, faculty, type User, type InsertUser, type Session, type InsertSession, type Program, type Faculty } from "@shared/schema";
-import { db } from "./db";
-import { eq } from "drizzle-orm";
+import crypto from 'crypto';
 
-export interface IStorage {
-  // User methods
-  getUser(id: number): Promise<User | undefined>;
-  getUserByEmail(email: string): Promise<User | undefined>;
-  createUser(insertUser: InsertUser): Promise<User>;
-  
-  // Session methods
-  getSessionByToken(token: string): Promise<Session | undefined>;
-  createSession(insertSession: InsertSession): Promise<Session>;
-  deleteSession(token: string): Promise<void>;
-  
-  // Program methods
-  getAllPrograms(): Promise<Program[]>;
-  
-  // Faculty methods
-  getAllFaculty(): Promise<Faculty[]>;
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  avatar?: string;
+  provider: 'google' | 'apple' | 'email';
+  providerId?: string;
+  password?: string;
+  isStudent: boolean;
+  isFaculty: boolean;
+  isAdmin: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-export class DatabaseStorage implements IStorage {
-  async getUser(id: number): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.id, id));
-    return user || undefined;
-  }
-
-  async getUserByEmail(email: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.email, email));
-    return user || undefined;
-  }
-
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const [user] = await db
-      .insert(users)
-      .values(insertUser)
-      .returning();
-    return user;
-  }
-
-  async getSessionByToken(token: string): Promise<Session | undefined> {
-    const [session] = await db.select().from(sessions).where(eq(sessions.token, token));
-    return session || undefined;
-  }
-
-  async createSession(insertSession: InsertSession): Promise<Session> {
-    const [session] = await db
-      .insert(sessions)
-      .values(insertSession)
-      .returning();
-    return session;
-  }
-
-  async deleteSession(token: string): Promise<void> {
-    await db.delete(sessions).where(eq(sessions.token, token));
-  }
-
-  async getAllPrograms(): Promise<Program[]> {
-    return await db.select().from(programs).where(eq(programs.isActive, true));
-  }
-
-  async getAllFaculty(): Promise<Faculty[]> {
-    return await db.select().from(faculty).where(eq(faculty.isActive, true));
-  }
+export interface Session {
+  id: string;
+  userId: string;
+  token: string;
+  expiresAt: Date;
+  createdAt: Date;
 }
 
-export const storage = new DatabaseStorage();
+export interface Program {
+  id: string;
+  name: string;
+  description: string;
+  duration: string;
+  degree: string;
+  department: string;
+  credits: number;
+  tuition: number;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface Faculty {
+  id: string;
+  name: string;
+  title: string;
+  department: string;
+  email: string;
+  phone?: string;
+  bio: string;
+  expertise: string[];
+  education: string[];
+  avatar?: string;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface InsertUser {
+  email: string;
+  name: string;
+  avatar?: string;
+  provider: 'google' | 'apple' | 'email';
+  providerId?: string;
+  password?: string;
+  isStudent?: boolean;
+  isFaculty?: boolean;
+  isAdmin?: boolean;
+}
+
+export interface InsertSession {
+  userId: string;
+  token: string;
+  expiresAt: Date;
+}
+
+export const storage = {
+  generateToken(): string {
+    return crypto.randomBytes(32).toString('hex');
+  }
+};
