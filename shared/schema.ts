@@ -106,30 +106,42 @@ export const inquiries = pgTable("inquiries", {
 });
 
 // Zod schemas for validation
-export const loginSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(6)
-});
+import { z } from 'zod'
 
+// User registration schema
 export const registerSchema = z.object({
-  email: z.string().email(),
-  firstName: z.string().min(1),
-  lastName: z.string().min(1),
-  password: z.string().min(6)
-});
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
+  firstName: z.string().min(1, 'First name is required'),
+  lastName: z.string().min(1, 'Last name is required'),
+})
 
+export type RegisterData = z.infer<typeof registerSchema>
+
+// User login schema
+export const loginSchema = z.object({
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(1, 'Password is required'),
+})
+
+export type LoginData = z.infer<typeof loginSchema>
+
+// OTP verification schema
 export const otpSchema = z.object({
-  email: z.string().email(),
-  otp: z.string().length(6)
-});
+  code: z.string().length(6, 'OTP must be 6 digits'),
+  email: z.string().email('Invalid email address'),
+})
 
+export type OtpData = z.infer<typeof otpSchema>
+
+// Contact/inquiry schema
 export const insertInquirySchema = z.object({
-  name: z.string().min(1),
-  email: z.string().email(),
-  phone: z.string().optional(),
-  subject: z.string().optional(),
-  message: z.string().min(10)
-});
+  name: z.string().min(1, 'Name is required'),
+  email: z.string().email('Invalid email address'),
+  message: z.string().min(10, 'Message must be at least 10 characters'),
+})
+
+export type InsertInquiry = z.infer<typeof insertInquirySchema>
 
 export const insertPageSchema = z.object({
   title: z.string().min(1),

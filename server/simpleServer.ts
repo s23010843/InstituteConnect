@@ -1,6 +1,7 @@
-import express from "express";
-import cors from "cors";
-import dotenv from "dotenv";
+import express from 'express';
+import cors from 'cors';
+import path from 'path';
+import dotenv from 'dotenv';
 import { storage } from "./storage";
 
 dotenv.config();
@@ -60,6 +61,26 @@ app.get("/api/faculty", async (req, res) => {
     res.status(500).json({ message: "Failed to fetch faculty" });
   }
 });
+
+// Serve static files from client/dist in production
+if (process.env.NODE_ENV === 'production') {
+  const clientDistPath = path.join(__dirname, '../client/dist');
+  app.use(express.static(clientDistPath));
+
+  // Handle client-side routing - serve index.html for non-API routes
+  app.get('*', (req, res) => {
+    if (!req.path.startsWith('/api')) {
+      res.sendFile(path.join(clientDistPath, 'index.html'));
+    } else {
+      res.status(404).json({ message: 'API endpoint not found' });
+    }
+  });
+} else {
+  // In development, redirect root to frontend dev server
+  app.get('/', (req, res) => {
+    res.redirect('http://localhost:5173');
+  });
+}
 
 // Start server
 app.listen(PORT, "0.0.0.0", () => {

@@ -180,7 +180,7 @@ app.get("/api/auth/apple/callback",
 );
 
 // API routes
-app.use(routes);
+registerRoutes(app);
 
 // Health check
 app.get("/api/health", (req, res) => {
