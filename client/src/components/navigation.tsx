@@ -1,33 +1,25 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
-import AuthModal from "./auth-modal";
+import { AuthModal } from "./auth-modal";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { GraduationCap, Menu, LogIn } from "lucide-react";
 import { useLocation, Link } from "wouter";
 
 export default function Navigation() {
-  const { user, signOut } = useAuth();
+  const { user, logout } = useAuth();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [, setLocation] = useLocation();
 
   const handleSignOut = async () => {
-    await signOut();
+    await logout();
   };
 
   const [location] = useLocation();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const scrollToSection = (sectionId: string) => {
-    // If we're not on home page, navigate to home first
-    if (location !== '/') {
-      window.location.href = `/#${sectionId}`;
-      return;
-    }
-
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
+    setLocation(`/${sectionId}`);
   };
 
   return (
@@ -53,24 +45,24 @@ export default function Navigation() {
               <Link href="/" className="text-institute-gray hover:text-institute-blue transition-colors">
                 Home
               </Link>
-              <button 
-                onClick={() => scrollToSection('programs')}
+              <Link 
+                href="/programs"
                 className="text-institute-gray hover:text-institute-blue transition-colors"
               >
                 Programs
-              </button>
-              <button 
-                onClick={() => scrollToSection('faculty')}
+              </Link>
+              <Link 
+                href="/faculty"
                 className="text-institute-gray hover:text-institute-blue transition-colors"
               >
                 Faculty
-              </button>
-              <button 
-                onClick={() => scrollToSection('research')}
+              </Link>
+              <Link 
+                href="/research"
                 className="text-institute-gray hover:text-institute-blue transition-colors"
               >
                 Research
-              </button>
+              </Link>
               <Link href="/about" className="text-institute-gray hover:text-institute-blue transition-colors">
                 About
               </Link>
@@ -118,13 +110,70 @@ export default function Navigation() {
               )}
 
               {/* Mobile Menu Button */}
-              <Button variant="ghost" size="sm" className="md:hidden">
+              <Button variant="ghost" size="sm" className="md:hidden" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
                 <Menu className="h-5 w-5" />
               </Button>
             </div>
           </div>
         </div>
       </nav>
+
+      {/* Mobile Menu */}
+      {isMobileMenuOpen && (
+        <div className="md:hidden bg-white shadow-md absolute top-16 left-0 w-full z-50">
+          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+            <Link href="/" className="block px-3 py-2 text-institute-gray hover:text-institute-blue" onClick={() => setIsMobileMenuOpen(false)}>
+              Home
+            </Link>
+            <Link 
+              href="/programs"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="block px-3 py-2 text-institute-gray hover:text-institute-blue"
+            >
+              Programs
+            </Link>
+            <Link 
+              href="/faculty"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="block px-3 py-2 text-institute-gray hover:text-institute-blue"
+            >
+              Faculty
+            </Link>
+            <Link 
+              href="/research"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="block px-3 py-2 text-institute-gray hover:text-institute-blue"
+            >
+              Research
+            </Link>
+            <Link href="/about" className="block px-3 py-2 text-institute-gray hover:text-institute-blue" onClick={() => setIsMobileMenuOpen(false)}>
+              About
+            </Link>
+            <Link href="/contact" className="block px-3 py-2 text-institute-gray hover:text-institute-blue" onClick={() => setIsMobileMenuOpen(false)}>
+              Contact
+            </Link>
+            {user ? (
+              <>
+                <Link href="/dashboard" className="block px-3 py-2 text-institute-gray hover:text-institute-blue" onClick={() => setIsMobileMenuOpen(false)}>
+                  Dashboard
+                </Link>
+                <button onClick={handleSignOut} className="block px-3 py-2 text-left text-institute-gray hover:text-institute-blue">
+                  Sign Out
+                </button>
+              </>
+            ) : (
+              <>
+                <Link href="/login" className="block px-3 py-2 text-institute-gray hover:text-institute-blue" onClick={() => setIsMobileMenuOpen(false)}>
+                  Sign In
+                </Link>
+                <Link href="/signup" className="block px-3 py-2 text-institute-gray hover:text-institute-blue" onClick={() => setIsMobileMenuOpen(false)}>
+                  Sign Up
+                </Link>
+              </>
+            )}
+          </div>
+        </div>
+      )}
 
       <AuthModal 
         isOpen={isAuthModalOpen} 

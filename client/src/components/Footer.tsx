@@ -4,25 +4,25 @@ import { getCopyrightText } from "@/lib/date-utils";
 
 export default function Footer() {
   const quickLinks = [
-    { label: "Admissions", href: "#admissions" },
-    { label: "Tuition & Aid", href: "#tuition" },
-    { label: "Campus Life", href: "#campus" },
-    { label: "Alumni", href: "#alumni" },
-    { label: "Careers", href: "#careers" },
+    { label: "Admissions", href: "/admissions" },
+    { label: "Tuition & Aid", href: "/tuition" },
+    { label: "Campus Life", href: "/campus" },
+    { label: "Alumni", href: "/alumni" },
+    { label: "Careers", href: "/careers" },
   ];
 
   const academicLinks = [
-    { label: "Undergraduate", href: "#undergraduate" },
-    { label: "Graduate", href: "#graduate" },
-    { label: "Research", href: "#research" },
-    { label: "Libraries", href: "#libraries" },
-    { label: "Academic Calendar", href: "#calendar" },
+    { label: "Undergraduate", href: "/undergraduate" },
+    { label: "Graduate", href: "/graduate" },
+    { label: "Research", href: "/research" },
+    { label: "Libraries", href: "/libraries" },
+    { label: "Academic Calendar", href: "/calendar" },
   ];
 
   const legalLinks = [
-    { label: "Privacy Policy", href: "#privacy" },
-    { label: "Terms of Service", href: "#terms" },
-    { label: "Accessibility", href: "#accessibility" },
+    { label: "Privacy Policy", href: "/privacy" },
+    { label: "Terms of Service", href: "/terms" },
+    { label: "Accessibility", href: "/accessibility" },
   ];
 
   return (
@@ -61,7 +61,7 @@ export default function Footer() {
               </Button>
             </div>
           </div>
-          
+
           {/* Quick Links */}
           <div>
             <h3 className="font-roboto-slab text-lg font-bold mb-6">Quick Links</h3>
@@ -75,7 +75,7 @@ export default function Footer() {
               ))}
             </ul>
           </div>
-          
+
           {/* Academics */}
           <div>
             <h3 className="font-roboto-slab text-lg font-bold mb-6">Academics</h3>
@@ -89,7 +89,7 @@ export default function Footer() {
               ))}
             </ul>
           </div>
-          
+
           {/* Contact Info */}
           <div>
             <h3 className="font-roboto-slab text-lg font-bold mb-6">Contact Info</h3>
@@ -100,7 +100,7 @@ export default function Footer() {
             </div>
           </div>
         </div>
-        
+
         <div className="border-t border-gray-600 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-gray-300 text-sm">{getCopyrightText()}</p>
           <div className="flex space-x-6 mt-4 md:mt-0">

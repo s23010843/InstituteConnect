@@ -11,14 +11,27 @@ import { Chrome, Apple, ArrowLeft } from "lucide-react";
 
 export default function LoginPage() {
   const [, setLocation] = useLocation();
-  const { signInWithGoogle, signInWithApple, isLoading } = useAuth();
+  const { login, signInWithGoogle, signInWithApple, isLoading } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
-  const handleEmailLogin = (e: React.FormEvent) => {
+  const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement email/password login
-    console.log("Email login:", { email, password });
+    setError("");
+    
+    if (!email || !password) {
+      setError("Please fill in all fields");
+      return;
+    }
+
+    try {
+      await login(email, password);
+      setLocation("/dashboard");
+    } catch (error) {
+      console.error("Login failed:", error);
+      setError("Login failed. Please check your credentials.");
+    }
   };
 
   const handleGoogleSignIn = async () => {
@@ -57,6 +70,12 @@ export default function LoginPage() {
           <CardContent className="space-y-6">
             
             <form onSubmit={handleEmailLogin} className="space-y-4">
+              {error && (
+                <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md">
+                  {error}
+                </div>
+              )}
+              
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
@@ -81,8 +100,12 @@ export default function LoginPage() {
                 />
               </div>
 
-              <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white">
-                Sign In
+              <Button 
+                type="submit" 
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                disabled={isLoading}
+              >
+                {isLoading ? "Signing in..." : "Sign In"}
               </Button>
             </form>
 

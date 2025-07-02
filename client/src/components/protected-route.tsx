@@ -1,6 +1,7 @@
-import { useAuth } from "@/hooks/use-auth";
-import { useLocation } from "wouter";
-import { useEffect } from "react";
+
+import React from 'react';
+import { useAuth } from '@/hooks/use-auth';
+import { useLocation } from 'wouter';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -8,27 +9,19 @@ interface ProtectedRouteProps {
 
 export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { user, isLoading } = useAuth();
-  const [, setLocation] = useLocation();
-
-  useEffect(() => {
-    if (!isLoading && !user) {
-      setLocation("/error/403");
-    }
-  }, [user, isLoading, setLocation]);
+  const [, navigate] = useLocation();
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-orange-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading...</p>
-        </div>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
       </div>
     );
   }
 
   if (!user) {
-    return null; // Will redirect to 403 via useEffect
+    navigate('/login');
+    return null;
   }
 
   return <>{children}</>;

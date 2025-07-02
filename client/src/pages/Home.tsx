@@ -5,7 +5,7 @@ import FacultySection from "@/components/faculty-section";
 import ResearchSection from "@/components/research-section";
 import AboutSection from "@/components/about-section";
 import ContactSection from "@/components/contact-section";
-import Footer from "@/components/footer";
+import Footer from "@/components/Footer";
 import PWAInstallBanner from "@/components/pwa-install-banner";
 import { useAuth } from "@/hooks/use-auth";
 import { useLocation } from "wouter";

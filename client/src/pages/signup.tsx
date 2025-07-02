@@ -12,7 +12,7 @@ import { Link } from "wouter";
 
 export default function SignupPage() {
   const [, setLocation] = useLocation();
-  const { signInWithGoogle, signInWithApple, isLoading } = useAuth();
+  const { register, signInWithGoogle, signInWithApple, isLoading } = useAuth();
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -21,24 +21,45 @@ export default function SignupPage() {
     confirmPassword: "",
     agreeToTerms: false,
   });
+  const [error, setError] = useState("");
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleEmailSignup = (e: React.FormEvent) => {
+  const handleEmailSignup = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
+    
+    if (!formData.firstName || !formData.lastName || !formData.email || !formData.password) {
+      setError("Please fill in all fields");
+      return;
+    }
+    
     if (formData.password !== formData.confirmPassword) {
-      alert("Passwords don't match");
+      setError("Passwords don't match");
       return;
     }
+    
+    if (formData.password.length < 6) {
+      setError("Password must be at least 6 characters long");
+      return;
+    }
+    
     if (!formData.agreeToTerms) {
-      alert("Please agree to the terms and conditions");
+      setError("Please agree to the terms and conditions");
       return;
     }
-    // TODO: Implement email/password signup
-    console.log("Email signup:", formData);
+
+    try {
+      const fullName = `${formData.firstName} ${formData.lastName}`;
+      await register(formData.email, formData.password, fullName);
+      setLocation("/dashboard");
+    } catch (error) {
+      console.error("Signup failed:", error);
+      setError("Signup failed. Please try again.");
+    }
   };
 
   const handleGoogleSignIn = async () => {
@@ -108,6 +129,12 @@ export default function SignupPage() {
 
             {/* Email Signup Form */}
             <form onSubmit={handleEmailSignup} className="space-y-4">
+              {error && (
+                <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md">
+                  {error}
+                </div>
+              )}
+              
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="firstName">First Name</Label>
@@ -192,8 +219,12 @@ export default function SignupPage() {
                 </Label>
               </div>
               
-              <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white">
-                Create Account
+              <Button 
+                type="submit" 
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                disabled={isLoading}
+              >
+                {isLoading ? "Creating Account..." : "Create Account"}
               </Button>
             </form>
 

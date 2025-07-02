@@ -1,4 +1,4 @@
-# Excellence Institute - Replit Development Guide
+# Excellence Institute - Development Guide
 
 ## Overview
 

@@ -77,9 +77,27 @@ router.post('/auth/register', async (req, res) => {
   }
 });
 
+router.post('/auth/logout', (req, res) => {
+  try {
+    // In a real app, you'd clear the session/token here
+    res.json({ message: 'Logged out successfully' });
+  } catch (error) {
+    console.error('Logout error:', error);
+    res.status(500).json({ 
+      message: 'Internal server error during logout' 
+    });
+  }
+});
+
 // User endpoints
 router.get('/users/profile', (req, res) => {
   try {
+    // Mock authentication check - in real app, verify token/session
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+    
     // Mock user profile data
     res.json({
       id: '1',
