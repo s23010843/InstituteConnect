@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "node index.js",
+    "build": "npx vite build",
+    "start": "NODE_ENV=production npx tsx server/simpleServer.ts",    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
