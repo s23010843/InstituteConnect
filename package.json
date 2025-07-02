@@ -7,7 +7,11 @@
     "build": "cd client && npx vite build",
     "start": "NODE_ENV=production npx tsx server/simpleServer.ts",
     "postbuild": "echo 'Build complete - ready for deployment'",
+<<<<<<< HEAD
     "test": "echo \"Error: no test specified\" && exit 1"
+=======
+    "start": "NODE_ENV=production npx tsx server/simpleServer.ts",    "test": "echo \"Error: no test specified\" && exit 1"
+>>>>>>> 7dfea72e68fc5cb171291973a7372e37df9be45d
   },
   "keywords": [],
   "author": "",
