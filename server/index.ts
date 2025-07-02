@@ -1,18 +1,21 @@
 import express from 'express';
 import cors from 'cors';
+import type { CorsOptions } from 'cors';
 import apiRouter from './routes';
 import { createServer } from './vite';
 
 const app = express();
 const SERVER_PORT = process.env.PORT || 5000;
 
-// Configure middleware
-app.use(cors({
+// Configure CORS
+const corsOptions: CorsOptions = {
   origin: process.env.NODE_ENV === 'production' 
-    ? ['https://your-domain.com'] 
-    : ['http://localhost:5173', 'http://0.0.0.0:5173'],
+    ? [process.env.PRODUCTION_DOMAIN || 'https://example.com'] 
+    : ['http://localhost:5173', 'http://127.0.0.1:5173'],
   credentials: true
-}));
+};
+
+app.use(cors(corsOptions));
 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
@@ -37,10 +40,10 @@ async function startExcellenceInstituteServer() {
       }
     });
 
-    server.listen(SERVER_PORT, '0.0.0.0', () => {
-      console.log(`✅ Excellence Institute server running on http://0.0.0.0:${SERVER_PORT}`);
-      console.log(`📚 API endpoints available at http://0.0.0.0:${SERVER_PORT}/api`);
-      console.log(`🌐 Frontend available at http://0.0.0.0:${SERVER_PORT}`);
+    server.listen(SERVER_PORT, 'localhost', () => {
+      console.log(`✅ Excellence Institute server running on http://localhost:${SERVER_PORT}`);
+      console.log(`📚 API endpoints available at http://localhost:${SERVER_PORT}/api`);
+      console.log(`🌐 Frontend available at http://localhost:${SERVER_PORT}`);
     });
   } catch (error) {
     console.error('❌ Failed to start Excellence Institute server:', error);

@@ -1,0 +1,18 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "types": ["node"],
+    "lib": ["esnext"],
+    "jsx": "react-jsx",
+    "noEmit": false,
+    "outDir": "../dist"
+  },
+  "include": [
+    "./**/*",
+    "../shared/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "../client/**/*"
+  ]
+}
