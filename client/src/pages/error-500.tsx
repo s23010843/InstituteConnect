@@ -29,7 +29,7 @@ export default function Error500() {
             <RefreshCcw className="h-4 w-4 mr-2" />
             Try Again
           </Button>
-          
+
           <Link href="/">
             <Button variant="outline" className="w-full">
               <Home className="h-4 w-4 mr-2" />

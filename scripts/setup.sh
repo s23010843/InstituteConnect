@@ -2,42 +2,59 @@
 #!/bin/bash
 
 # Excellence Institute Setup Script
+# This script sets up the development environment
+
 echo "🎓 Setting up Excellence Institute..."
 
 # Check if Node.js is installed
 if ! command -v node &> /dev/null; then
-    echo "❌ Node.js is not installed. Please install Node.js 18 or higher."
+    echo "❌ Node.js is not installed. Please install Node.js 18+ first."
     exit 1
 fi
 
-# Check Node.js version
-NODE_VERSION=$(node -v | cut -d'v' -f2 | cut -d'.' -f1)
-if [ "$NODE_VERSION" -lt 18 ]; then
-    echo "❌ Node.js version 18 or higher is required. Current version: $(node -v)"
+# Check if npm is installed
+if ! command -v npm &> /dev/null; then
+    echo "❌ npm is not installed. Please install npm first."
     exit 1
 fi
+
+echo "✅ Node.js and npm found"
 
 # Install dependencies
 echo "📦 Installing dependencies..."
 npm install
 
-# Copy environment file if it doesn't exist
+if [ $? -ne 0 ]; then
+    echo "❌ Failed to install dependencies"
+    exit 1
+fi
+
+echo "✅ Dependencies installed successfully"
+
+# Create .env file if it doesn't exist
 if [ ! -f .env ]; then
-    echo "📄 Creating .env file from template..."
+    echo "📝 Creating .env file..."
     cp .env.example .env
-    echo "⚠️  Please update .env file with your actual values!"
+    echo "✅ .env file created. Please edit it with your actual values."
+else
+    echo "✅ .env file already exists"
 fi
 
-# Run database migrations if DATABASE_URL is set
-if [ ! -z "$DATABASE_URL" ]; then
-    echo "🗃️  Running database migrations..."
-    npm run db:push
+# Run database migrations
+echo "🗄️ Setting up database..."
+npm run db:push
+
+if [ $? -ne 0 ]; then
+    echo "⚠️ Database setup failed. Make sure your DATABASE_URL is correct in .env"
+else
+    echo "✅ Database setup complete"
 fi
 
-# Build the application
-echo "🔨 Building application..."
-npm run build
-
-echo "✅ Setup complete!"
-echo "🚀 Run 'npm start' to start the production server"
-echo "🔧 Run 'npm run dev' for development mode"
+echo ""
+echo "🎉 Setup complete!"
+echo ""
+echo "Next steps:"
+echo "1. Edit .env file with your actual values"
+echo "2. Run 'npm run dev' to start the development server"
+echo "3. Visit http://localhost:5000 to see your application"
+echo ""

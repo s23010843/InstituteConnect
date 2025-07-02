@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Home, ArrowLeft, Search } from "lucide-react";
 import { Link } from "wouter";
@@ -37,6 +38,20 @@ export default function Error404() {
               Contact Support
             </Button>
           </Link>
+        </div>
+
+        <div className="mt-8 p-4 bg-blue-100 rounded-lg text-sm text-blue-700">
+          <p className="font-medium mb-2">What can you do?</p>
+          <ul className="text-left space-y-1">
+            <li>• Check the URL for any typos</li>
+            <li>• Use the navigation menu to find what you're looking for</li>
+            <li>• Return to the homepage</li>
+            <li>• Contact support if you need assistance</li>
+          </ul>
+        </div>
+
+        <div className="mt-6 text-xs text-gray-500">
+          <p>Error Code: 404 | {new Date().toISOString()}</p>
         </div>
 
         <div className="mt-8 text-sm text-gray-500">
