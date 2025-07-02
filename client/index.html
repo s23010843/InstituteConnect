@@ -2,22 +2,190 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Institute Portal</title>
-    <meta name="description" content="Welcome to our premier educational institute. Discover our courses, faculty, and programs designed to help you succeed." />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+    <title>Excellence Institute - Premier Education & Research</title>
     
-    <!-- Open Graph tags for social media -->
-    <meta property="og:title" content="Institute Portal" />
-    <meta property="og:description" content="Welcome to our premier educational institute. Discover our courses, faculty, and programs designed to help you succeed." />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="/" />
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Excellence Institute - Premier education and research institution offering innovative programs in computer science, business, engineering, and more. Join 15K+ students in shaping the future.">
+    <meta name="keywords" content="university, education, research, computer science, business, engineering, psychology, excellence institute">
+    <meta name="author" content="Excellence Institute">
     
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Excellence Institute - Premier Education & Research">
+    <meta property="og:description" content="Empowering minds, advancing knowledge, and shaping tomorrow's leaders through innovative programs and cutting-edge research.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://excellence.edu">
+    <meta property="og:site_name" content="Excellence Institute">
+    
+    <!-- Twitter Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Excellence Institute - Premier Education & Research">
+    <meta name="twitter:description" content="Empowering minds, advancing knowledge, and shaping tomorrow's leaders through innovative programs and cutting-edge research.">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#1565C0">
+    <meta name="background-color" content="#1565C0">
+    
+    <!-- Apple PWA Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Excellence Institute">
+    <meta name="apple-touch-fullscreen" content="yes">
+    
+    <!-- Favicon and Icons -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiByeD0iNCIgZmlsbD0iIzE1NjVDMCIvPgo8cGF0aCBkPSJtMTcgOS01LTMtNSAzIDEgMiA0LTIgNCAyeiIgZmlsbD0id2hpdGUiLz4KPHBhdGggZD0iTTYgMTFoMTJ2NGEyIDIgMCAwIDEtMiAySDhhMiAyIDAgMCAxLTItMnYtNCIgZmlsbD0id2hpdGUiLz4KPC9zdmc+" />
+    <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cmVjdCB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHJ4PSI0IiBmaWxsPSIjMTU2NUMwIi8+CjxwYXRoIGQ9Im0xNyA5LTUtMy01IDMgMSAyIDQtMiA0IDJ6IiBmaWxsPSJ3aGl0ZSIvPgo8cGF0aCBkPSJNNiAxMWgxMnY0YTIgMiAwIDAgMS0yIDJIOGEyIDIgMCAwIDEtMi0ydi00IiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4=" />
+    
+    <!-- Microsoft Tile -->
+    <meta name="msapplication-TileColor" content="#1565C0">
+    <meta name="msapplication-config" content="/browserconfig.xml">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Roboto+Slab:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+    <!-- Preload critical resources -->
+    <link rel="dns-prefetch" href="https://accounts.google.com">
+    <link rel="dns-prefetch" href="https://appleid.cdn-apple.com">
+    
+    <!-- Security -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+    
+    <!-- Performance -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <!-- PWA Install Criteria -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Excellence Institute">
+    
+    <!-- Startup Image for iOS -->
+    <link rel="apple-touch-startup-image" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNzUwIiBoZWlnaHQ9IjEzMzQiIHZpZXdCb3g9IjAgMCA3NTAgMTMzNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9Ijc1MCIgaGVpZ2h0PSIxMzM0IiBmaWxsPSIjMTU2NUMwIi8+CjxzdmcgeD0iMzEyIiB5PSI2MDAiIHdpZHRoPSIxMjYiIGhlaWdodD0iMTM0IiB2aWV3Qm94PSIwIDAgMjQgMjQiIGZpbGw9Im5vbmUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj4KPHN2ZyB3aWR0aD0iMTI2IiBoZWlnaHQ9IjEzNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+CjxwYXRoIGQ9Im0yMiA5LTktNS05IDUgMSA0IDgtNCA4IDR6Ii8+CjxwYXRoIGQ9Ik0yIDEzaDIwdjZhMiAyIDAgMCAxLTIgMkg0YTIgMiAwIDAgMS0yLTJ2LTYiLz4KPC9zdmc+Cjwvc3ZnPgo=" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)">
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then((registration) => {
+              console.log('SW registered: ', registration);
+              
+              // Check for updates
+              registration.addEventListener('updatefound', () => {
+                const newWorker = registration.installing;
+                if (newWorker) {
+                  newWorker.addEventListener('statechange', () => {
+                    if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                      // New content is available, prompt user to refresh
+                      if (confirm('New version available! Click OK to update.')) {
+                        window.location.reload();
+                      }
+                    }
+                  });
+                }
+              });
+            })
+            .catch((registrationError) => {
+              console.log('SW registration failed: ', registrationError);
+            });
+        });
+      }
+      
+      // Handle offline/online status
+      function updateOnlineStatus() {
+        const isOnline = navigator.onLine;
+        document.body.classList.toggle('offline', !isOnline);
+        
+        if (!isOnline) {
+          // Show offline indicator
+          const offlineIndicator = document.getElementById('offline-indicator') || document.createElement('div');
+          offlineIndicator.id = 'offline-indicator';
+          offlineIndicator.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #D32F2F;
+            color: white;
+            text-align: center;
+            padding: 8px;
+            z-index: 9999;
+            font-family: Roboto, sans-serif;
+            font-size: 14px;
+          `;
+          offlineIndicator.textContent = 'You are currently offline. Some features may not be available.';
+          if (!document.getElementById('offline-indicator')) {
+            document.body.appendChild(offlineIndicator);
+          }
+        } else {
+          // Remove offline indicator
+          const indicator = document.getElementById('offline-indicator');
+          if (indicator) {
+            indicator.remove();
+          }
+        }
+      }
+      
+      window.addEventListener('online', updateOnlineStatus);
+      window.addEventListener('offline', updateOnlineStatus);
+      updateOnlineStatus(); // Check initial status
+      
+      // PWA install prompt handling
+      let deferredPrompt;
+      
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        // The PWA install banner component will handle the UI
+        window.dispatchEvent(new CustomEvent('pwa-install-available'));
+      });
+      
+      window.addEventListener('appinstalled', () => {
+        console.log('PWA was installed');
+        deferredPrompt = null;
+      });
+      
+      // Expose install function globally for the React component
+      window.installPWA = async () => {
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          const { outcome } = await deferredPrompt.userChoice;
+          console.log(`User response to the install prompt: ${outcome}`);
+          deferredPrompt = null;
+        }
+      };
+      
+      // Performance monitoring
+      window.addEventListener('load', () => {
+        if ('performance' in window) {
+          const perfData = performance.getEntriesByType('navigation')[0];
+          console.log(`Page load time: ${perfData.loadEventEnd - perfData.fetchStart}ms`);
+        }
+      });
+      
+      // Error boundary for unhandled errors
+      window.addEventListener('error', (event) => {
+        console.error('Global error:', event.error);
+        // In production, you might want to send this to an error tracking service
+      });
+      
+      window.addEventListener('unhandledrejection', (event) => {
+        console.error('Unhandled promise rejection:', event.reason);
+        // In production, you might want to send this to an error tracking service
+      });
+    </script>
+    
+    <!-- This is a replit script which adds a banner on the top of the page when opened in development mode outside the replit environment -->
+    <script type="text/javascript" src="https://replit.com/public/js/replit-dev-banner.js"></script>
   </body>
 </html>

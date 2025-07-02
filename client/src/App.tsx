@@ -1,91 +1,52 @@
-import { useEffect, useState } from 'react'
-import { Router, Route, Switch } from 'wouter'
-import { Toaster } from 'react-hot-toast'
+import { Switch, Route } from "wouter";
+import { queryClient } from "./lib/queryClient";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { Toaster } from "@/components/ui/toaster";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { AuthProvider } from "@/hooks/use-auth";
+import Home from "@/pages/home";
+import DashboardWrapper from "@/components/dashboard-wrapper";
+import LoginPage from "@/pages/login";
+import SignupPage from "@/pages/signup";
+import AboutPage from "@/pages/about";
+import ContactPage from "@/pages/contact";
+import TermsPage from "@/pages/terms";
+import PrivacyPage from "@/pages/privacy";
+import Error404 from "@/pages/error-404";
+import Error500 from "@/pages/error-500";
+import Error403 from "@/pages/error-403";
+import NotFound from "@/pages/not-found";
 
-// Pages
-import Home from './pages/Home'
-import Login from './pages/Login'
-import Register from './pages/Register'
-import OTPVerification from './pages/OTPVerification'
-import Courses from './pages/Courses'
-import Faculty from './pages/Faculty'
-import News from './pages/News'
-import Contact from './pages/Contact'
-import AuthCallback from './pages/AuthCallback'
-import NotFound from './pages/NotFound'
-
-// Components
-import Navbar from './components/Navbar'
-import Footer from './components/Footer'
-
-// Hooks
-import { useAuth } from './hooks/useAuth'
-
-// Utils
-import { getStoredToken } from './lib/auth'
-
-function App() {
-  const { isAuthenticated, isLoading } = useAuth()
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    setMounted(true)
-    
-    // Handle authentication from URL params (for OAuth callbacks)
-    const urlParams = new URLSearchParams(window.location.search)
-    const token = urlParams.get('token')
-    if (token) {
-      localStorage.setItem('authToken', token)
-      window.history.replaceState({}, document.title, window.location.pathname)
-      window.location.reload()
-    }
-  }, [])
-
-  if (!mounted || isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
-      </div>
-    )
-  }
-
+function Router() {
   return (
-    <>
-      <Router>
-        <div className="min-h-screen flex flex-col">
-          <Navbar />
-          
-          <main className="flex-1">
-            <Switch>
-              <Route path="/" component={Home} />
-              <Route path="/login" component={Login} />
-              <Route path="/register" component={Register} />
-              <Route path="/verify-otp" component={OTPVerification} />
-              <Route path="/courses" component={Courses} />
-              <Route path="/faculty" component={Faculty} />
-              <Route path="/news" component={News} />
-              <Route path="/contact" component={Contact} />
-              <Route path="/auth/callback" component={AuthCallback} />
-              <Route component={NotFound} />
-            </Switch>
-          </main>
-          
-          <Footer />
-        </div>
-      </Router>
-      
-      <Toaster
-        position="top-right"
-        toastOptions={{
-          duration: 4000,
-          style: {
-            background: '#363636',
-            color: '#fff',
-          },
-        }}
-      />
-    </>
-  )
+    <Switch>
+      <Route path="/" component={Home} />
+      <Route path="/about" component={AboutPage} />
+      <Route path="/contact" component={ContactPage} />
+      <Route path="/login" component={LoginPage} />
+      <Route path="/signup" component={SignupPage} />
+      <Route path="/terms" component={TermsPage} />
+      <Route path="/privacy" component={PrivacyPage} />
+      <Route path="/dashboard" component={DashboardWrapper} />
+      <Route path="/error/404" component={Error404} />
+      <Route path="/error/500" component={Error500} />
+      <Route path="/error/403" component={Error403} />
+      <Route component={NotFound} />
+    </Switch>
+  );
 }
 
-export default App
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <AuthProvider>
+          <Toaster />
+          <Router />
+        </AuthProvider>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+}
+
+export default App;

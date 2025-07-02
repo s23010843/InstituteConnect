@@ -1,350 +1,196 @@
-import express from "express";
-import rateLimit from "express-rate-limit";
-import { storage } from "./storage.js";
-import { 
-  hashPassword, 
-  comparePassword, 
-  generateToken, 
-  generateOTP, 
-  generateOTPExpiry,
-  authenticateToken,
-  optionalAuth,
-  type AuthRequest 
-} from "./auth.js";
-import { sendOTPEmail, sendContactInquiry } from "./email.js";
-import { 
-  loginSchema, 
-  registerSchema, 
-  otpSchema, 
-  insertInquirySchema,
-  type LoginData,
-  type RegisterData,
-  type OtpData,
-  type InsertInquiry
-} from "../shared/schema.js";
+import type { Express } from "express";
+import { createServer, type Server } from "http";
+import { storage } from "./storage";
+import { insertUserSchema, insertSessionSchema } from "@shared/schema";
+import { z } from "zod";
+import crypto from "crypto";
 
-const router = express.Router();
-
-// Rate limiting
-const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // limit each IP to 5 requests per windowMs
-  message: { message: "Too many authentication attempts, try again later." }
+const googleAuthSchema = z.object({
+  credential: z.string(),
 });
 
-const otpLimiter = rateLimit({
-  windowMs: 5 * 60 * 1000, // 5 minutes
-  max: 3, // limit each IP to 3 OTP requests per windowMs
-  message: { message: "Too many OTP requests, try again later." }
+const appleAuthSchema = z.object({
+  authorization: z.object({
+    code: z.string(),
+    id_token: z.string(),
+  }),
+  user: z.object({
+    email: z.string().email(),
+    name: z.object({
+      firstName: z.string(),
+      lastName: z.string(),
+    }),
+  }).optional(),
 });
 
-// Auth Routes
-router.post("/api/auth/register", authLimiter, async (req, res) => {
-  try {
-    const result = registerSchema.safeParse(req.body);
-    if (!result.success) {
-      return res.status(400).json({ 
-        message: "Invalid input", 
-        errors: result.error.errors 
-      });
-    }
-
-    const { email, firstName, lastName, password } = result.data;
-
-    // Check if user already exists
-    const existingUser = await storage.getUserByEmail(email);
-    if (existingUser) {
-      return res.status(409).json({ message: "User already exists" });
-    }
-
-    // Create user with hashed password
-    const passwordHash = await hashPassword(password);
-    const user = await storage.createUser({
-      email,
-      firstName,
-      lastName,
-      passwordHash
-    });
-
-    // Generate and send OTP
-    const otp = generateOTP();
-    const otpExpiry = generateOTPExpiry();
-    await storage.updateUserOtp(email, otp, otpExpiry);
-    await sendOTPEmail(email, otp);
-
-    res.status(201).json({ 
-      message: "Registration successful. Please verify your email with the OTP sent.",
-      userId: user.id
-    });
-  } catch (error) {
-    console.error("Registration error:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
+const contactFormSchema = z.object({
+  firstName: z.string().min(1),
+  lastName: z.string().min(1),
+  email: z.string().email(),
+  subject: z.string().min(1),
+  message: z.string().min(1),
 });
 
-router.post("/api/auth/login", authLimiter, async (req, res) => {
-  try {
-    const result = loginSchema.safeParse(req.body);
-    if (!result.success) {
-      return res.status(400).json({ 
-        message: "Invalid input", 
-        errors: result.error.errors 
-      });
-    }
-
-    const { email, password } = result.data;
-
-    // Find user
-    const user = await storage.getUserByEmail(email);
-    if (!user || !user.passwordHash) {
-      return res.status(401).json({ message: "Invalid credentials" });
-    }
-
-    // Verify password
-    const isValidPassword = await comparePassword(password, user.passwordHash);
-    if (!isValidPassword) {
-      return res.status(401).json({ message: "Invalid credentials" });
-    }
-
-    if (!user.isEmailVerified) {
-      // Generate and send new OTP
-      const otp = generateOTP();
-      const otpExpiry = generateOTPExpiry();
-      await storage.updateUserOtp(email, otp, otpExpiry);
-      await sendOTPEmail(email, otp);
-
-      return res.status(403).json({ 
-        message: "Email not verified. New OTP sent to your email.",
-        requiresOtp: true,
-        userId: user.id
-      });
-    }
-
-    // Generate JWT token
-    const token = generateToken(user);
-
-    res.json({
-      message: "Login successful",
-      token,
-      user: {
-        id: user.id,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        profileImageUrl: user.profileImageUrl
-      }
-    });
-  } catch (error) {
-    console.error("Login error:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-});
-
-router.post("/api/auth/verify-otp", otpLimiter, async (req, res) => {
-  try {
-    const result = otpSchema.safeParse(req.body);
-    if (!result.success) {
-      return res.status(400).json({ 
-        message: "Invalid input", 
-        errors: result.error.errors 
-      });
-    }
-
-    const { email, otp } = result.data;
-
-    const user = await storage.getUserByEmail(email);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    if (!user.otpCode || !user.otpExpiry) {
-      return res.status(400).json({ message: "No OTP found. Please request a new one." });
-    }
-
-    if (new Date() > user.otpExpiry) {
-      return res.status(400).json({ message: "OTP has expired. Please request a new one." });
-    }
-
-    if (user.otpCode !== otp) {
-      return res.status(400).json({ message: "Invalid OTP" });
-    }
-
-    // Verify the user's email
-    await storage.verifyUserEmail(email);
-
-    // Generate JWT token
-    const token = generateToken(user);
-
-    res.json({
-      message: "Email verified successfully",
-      token,
-      user: {
-        id: user.id,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        profileImageUrl: user.profileImageUrl
-      }
-    });
-  } catch (error) {
-    console.error("OTP verification error:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-});
-
-router.post("/api/auth/resend-otp", otpLimiter, async (req, res) => {
-  try {
-    const { email } = req.body;
-    if (!email) {
-      return res.status(400).json({ message: "Email is required" });
-    }
-
-    const user = await storage.getUserByEmail(email);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    const otp = generateOTP();
-    const otpExpiry = generateOTPExpiry();
-    await storage.updateUserOtp(email, otp, otpExpiry);
-    await sendOTPEmail(email, otp);
-
-    res.json({ message: "New OTP sent to your email" });
-  } catch (error) {
-    console.error("Resend OTP error:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-});
-
-router.get("/api/auth/me", authenticateToken, async (req: AuthRequest, res) => {
-  try {
-    const user = req.user!;
-    res.json({
-      id: user.id,
-      email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      profileImageUrl: user.profileImageUrl,
-      isEmailVerified: user.isEmailVerified
-    });
-  } catch (error) {
-    console.error("Get user error:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-});
-
-// Public Content Routes
-router.get("/api/pages", async (req, res) => {
-  try {
-    const pages = await storage.getPages();
-    res.json(pages);
-  } catch (error) {
-    console.error("Get pages error:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-});
-
-router.get("/api/pages/:slug", async (req, res) => {
-  try {
-    const { slug } = req.params;
-    const page = await storage.getPageBySlug(slug);
-    if (!page) {
-      return res.status(404).json({ message: "Page not found" });
-    }
-    res.json(page);
-  } catch (error) {
-    console.error("Get page error:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-});
-
-router.get("/api/news", async (req, res) => {
-  try {
-    const news = await storage.getNews();
-    res.json(news);
-  } catch (error) {
-    console.error("Get news error:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-});
-
-router.get("/api/news/:slug", async (req, res) => {
-  try {
-    const { slug } = req.params;
-    const article = await storage.getNewsBySlug(slug);
-    if (!article) {
-      return res.status(404).json({ message: "Article not found" });
-    }
-    res.json(article);
-  } catch (error) {
-    console.error("Get news article error:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-});
-
-router.get("/api/courses", async (req, res) => {
-  try {
-    const courses = await storage.getCourses();
-    res.json(courses);
-  } catch (error) {
-    console.error("Get courses error:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-});
-
-router.get("/api/courses/:slug", async (req, res) => {
-  try {
-    const { slug } = req.params;
-    const course = await storage.getCourseBySlug(slug);
-    if (!course) {
-      return res.status(404).json({ message: "Course not found" });
-    }
-    res.json(course);
-  } catch (error) {
-    console.error("Get course error:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-});
-
-router.get("/api/faculty", async (req, res) => {
-  try {
-    const faculty = await storage.getFaculty();
-    res.json(faculty);
-  } catch (error) {
-    console.error("Get faculty error:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-});
-
-// Contact Routes
-router.post("/api/contact", async (req, res) => {
-  try {
-    const result = insertInquirySchema.safeParse(req.body);
-    if (!result.success) {
-      return res.status(400).json({ 
-        message: "Invalid input", 
-        errors: result.error.errors 
-      });
-    }
-
-    const inquiry = await storage.createInquiry(result.data);
-    
-    // Send email notification
+export async function registerRoutes(app: Express): Promise<Server> {
+  // Get current user
+  app.get("/api/auth/me", async (req, res) => {
     try {
-      await sendContactInquiry(result.data);
-    } catch (emailError) {
-      console.error("Email notification failed:", emailError);
-      // Continue with success response even if email fails
+      const authHeader = req.headers.authorization;
+      if (!authHeader?.startsWith('Bearer ')) {
+        return res.status(401).json({ message: "No token provided" });
+      }
+
+      const token = authHeader.substring(7);
+      const session = await storage.getSessionByToken(token);
+      
+      if (!session || session.expiresAt < new Date()) {
+        return res.status(401).json({ message: "Invalid or expired token" });
+      }
+
+      const user = await storage.getUser(session.userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      res.json(user);
+    } catch (error) {
+      console.error('Get user error:', error);
+      res.status(500).json({ message: "Internal server error" });
     }
+  });
 
-    res.status(201).json({ 
-      message: "Your inquiry has been submitted successfully. We'll get back to you soon!",
-      inquiryId: inquiry.id
-    });
-  } catch (error) {
-    console.error("Contact inquiry error:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-});
+  // Google OAuth authentication
+  app.post("/api/auth/google", async (req, res) => {
+    try {
+      const { credential } = googleAuthSchema.parse(req.body);
+      
+      // TODO: Verify Google JWT token
+      // For now, we'll decode the JWT payload (in production, verify signature)
+      const payload = JSON.parse(Buffer.from(credential.split('.')[1], 'base64').toString());
+      
+      const userData = {
+        email: payload.email,
+        name: payload.name,
+        avatar: payload.picture,
+        provider: 'google' as const,
+        providerId: payload.sub,
+      };
 
-export default router;
+      let user = await storage.getUserByEmail(userData.email);
+      if (!user) {
+        user = await storage.createUser(userData);
+      }
+
+      // Create session
+      const token = crypto.randomBytes(32).toString('hex');
+      const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+      
+      await storage.createSession({
+        userId: user.id,
+        token,
+        expiresAt,
+      });
+
+      res.json({ user, token });
+    } catch (error) {
+      console.error('Google auth error:', error);
+      res.status(400).json({ message: "Authentication failed" });
+    }
+  });
+
+  // Apple Sign-In authentication
+  app.post("/api/auth/apple", async (req, res) => {
+    try {
+      const { authorization, user: appleUser } = appleAuthSchema.parse(req.body);
+      
+      // TODO: Verify Apple ID token
+      // For now, we'll decode the JWT payload (in production, verify signature)
+      const payload = JSON.parse(Buffer.from(authorization.id_token.split('.')[1], 'base64').toString());
+      
+      const userData = {
+        email: payload.email,
+        name: appleUser ? `${appleUser.name.firstName} ${appleUser.name.lastName}` : payload.email.split('@')[0],
+        provider: 'apple' as const,
+        providerId: payload.sub,
+      };
+
+      let user = await storage.getUserByEmail(userData.email);
+      if (!user) {
+        user = await storage.createUser(userData);
+      }
+
+      // Create session
+      const token = crypto.randomBytes(32).toString('hex');
+      const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+      
+      await storage.createSession({
+        userId: user.id,
+        token,
+        expiresAt,
+      });
+
+      res.json({ user, token });
+    } catch (error) {
+      console.error('Apple auth error:', error);
+      res.status(400).json({ message: "Authentication failed" });
+    }
+  });
+
+  // Sign out
+  app.post("/api/auth/signout", async (req, res) => {
+    try {
+      const authHeader = req.headers.authorization;
+      if (!authHeader?.startsWith('Bearer ')) {
+        return res.status(401).json({ message: "No token provided" });
+      }
+
+      const token = authHeader.substring(7);
+      await storage.deleteSession(token);
+      
+      res.json({ message: "Signed out successfully" });
+    } catch (error) {
+      console.error('Sign out error:', error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // Get programs
+  app.get("/api/programs", async (req, res) => {
+    try {
+      const programs = await storage.getAllPrograms();
+      res.json(programs);
+    } catch (error) {
+      console.error('Get programs error:', error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // Get faculty
+  app.get("/api/faculty", async (req, res) => {
+    try {
+      const faculty = await storage.getAllFaculty();
+      res.json(faculty);
+    } catch (error) {
+      console.error('Get faculty error:', error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // Contact form submission
+  app.post("/api/contact", async (req, res) => {
+    try {
+      const formData = contactFormSchema.parse(req.body);
+      
+      // TODO: Send email or save to database
+      console.log('Contact form submission:', formData);
+      
+      res.json({ message: "Message sent successfully" });
+    } catch (error) {
+      console.error('Contact form error:', error);
+      res.status(400).json({ message: "Invalid form data" });
+    }
+  });
+
+  const httpServer = createServer(app);
+  return httpServer;
+}

@@ -2,146 +2,117 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222.2 84% 4.9%;
-    --muted: 210 40% 96%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96%;
-    --accent-foreground: 222.2 84% 4.9%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
-    --radius: 0.5rem;
-  }
+:root {
+  --background: hsl(0, 0%, 100%);
+  --foreground: hsl(222, 14%, 25%);
+  --muted: hsl(210, 14%, 96%);
+  --muted-foreground: hsl(215, 16%, 47%);
+  --popover: hsl(0, 0%, 100%);
+  --popover-foreground: hsl(222, 14%, 25%);
+  --card: hsl(0, 0%, 100%);
+  --card-foreground: hsl(222, 14%, 25%);
+  --border: hsl(214, 32%, 91%);
+  --input: hsl(214, 32%, 91%);
+  --primary: hsl(209, 90%, 54%);
+  --primary-foreground: hsl(210, 40%, 98%);
+  --secondary: hsl(210, 14%, 96%);
+  --secondary-foreground: hsl(222, 47%, 11%);
+  --accent: hsl(210, 14%, 96%);
+  --accent-foreground: hsl(222, 47%, 11%);
+  --destructive: hsl(0, 84%, 60%);
+  --destructive-foreground: hsl(210, 40%, 98%);
+  --ring: hsl(222, 14%, 25%);
+  --radius: 0.5rem;
 
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 84% 4.9%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 94.1%;
-  }
+  /* Institute colors */
+  --institute-blue: hsl(209, 90%, 54%);
+  --institute-blue-dark: hsl(219, 100%, 33%);
+  --institute-gray: hsl(222, 14%, 25%);
+  --institute-orange: hsl(16, 89%, 63%);
+  --institute-green: hsl(124, 47%, 35%);
+  --institute-amber: hsl(36, 100%, 48%);
+  --institute-red: hsl(4, 69%, 50%);
+  --institute-surface: hsl(210, 40%, 98%);
+}
+
+.dark {
+  --background: hsl(222, 84%, 5%);
+  --foreground: hsl(210, 40%, 98%);
+  --muted: hsl(217, 32%, 17%);
+  --muted-foreground: hsl(215, 20%, 65%);
+  --popover: hsl(222, 84%, 5%);
+  --popover-foreground: hsl(210, 40%, 98%);
+  --card: hsl(222, 84%, 5%);
+  --card-foreground: hsl(210, 40%, 98%);
+  --border: hsl(217, 32%, 17%);
+  --input: hsl(217, 32%, 17%);
+  --primary: hsl(209, 90%, 54%);
+  --primary-foreground: hsl(210, 40%, 98%);
+  --secondary: hsl(217, 32%, 17%);
+  --secondary-foreground: hsl(210, 40%, 98%);
+  --accent: hsl(217, 32%, 17%);
+  --accent-foreground: hsl(210, 40%, 98%);
+  --destructive: hsl(0, 62%, 30%);
+  --destructive-foreground: hsl(210, 40%, 98%);
+  --ring: hsl(212, 72%, 59%);
 }
 
 @layer base {
   * {
     @apply border-border;
   }
+
   body {
-    @apply bg-background text-foreground;
-    font-family: 'Inter', sans-serif;
+    @apply font-sans antialiased bg-background text-foreground;
+    font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+
+  .font-roboto {
+    font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+
+  .font-roboto-slab {
+    font-family: 'Roboto Slab', Georgia, serif;
   }
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  @apply bg-secondary;
-}
-
-::-webkit-scrollbar-thumb {
-  @apply bg-muted-foreground rounded-md;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  @apply bg-foreground;
-}
-
-/* Smooth scrolling for AJAX navigation */
-html {
-  scroll-behavior: smooth;
-}
-
-/* Animations for page transitions */
-.fade-in {
-  animation: fadeIn 0.3s ease-in-out;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
+@layer components {
+  .material-shadow {
+    box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12);
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+
+  .material-shadow-lg {
+    box-shadow: 0 8px 10px -5px rgba(0, 0, 0, 0.2), 0 16px 24px 2px rgba(0, 0, 0, 0.14), 0 6px 30px 5px rgba(0, 0, 0, 0.12);
+  }
+
+  .institute-gradient {
+    background: linear-gradient(135deg, var(--institute-blue), var(--institute-blue-dark));
   }
 }
 
-.slide-in {
-  animation: slideIn 0.4s ease-in-out;
-}
+/* Institute color utilities */
+.bg-institute-blue { background-color: var(--institute-blue); }
+.bg-institute-blue-dark { background-color: var(--institute-blue-dark); }
+.bg-institute-gray { background-color: var(--institute-gray); }
+.bg-institute-orange { background-color: var(--institute-orange); }
+.bg-institute-green { background-color: var(--institute-green); }
+.bg-institute-amber { background-color: var(--institute-amber); }
+.bg-institute-red { background-color: var(--institute-red); }
+.bg-institute-surface { background-color: var(--institute-surface); }
 
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
+.text-institute-blue { color: var(--institute-blue); }
+.text-institute-blue-dark { color: var(--institute-blue-dark); }
+.text-institute-gray { color: var(--institute-gray); }
+.text-institute-orange { color: var(--institute-orange); }
+.text-institute-green { color: var(--institute-green); }
+.text-institute-amber { color: var(--institute-amber); }
+.text-institute-red { color: var(--institute-red); }
 
-/* Loading spinner */
-.spinner {
-  @apply inline-block w-4 h-4 border-2 border-current border-r-transparent rounded-full animate-spin;
-}
+.border-institute-blue { border-color: var(--institute-blue); }
+.border-institute-gray { border-color: var(--institute-gray); }
 
-/* Form styles */
-.form-error {
-  @apply text-sm text-destructive mt-1;
-}
-
-/* Button hover effects */
-.btn-hover {
-  @apply transition-all duration-200 hover:scale-105 hover:shadow-lg;
-}
-
-/* Card hover effects */
-.card-hover {
-  @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
-}
-
-/* Institute branding colors */
-.institute-primary {
-  @apply bg-blue-600 text-white;
-}
-
-.institute-secondary {
-  @apply bg-gray-100 text-gray-900;
-}
-
-.institute-accent {
-  @apply bg-orange-500 text-white;
-}
+.hover\:bg-institute-blue:hover { background-color: var(--institute-blue); }
+.hover\:bg-institute-blue-dark:hover { background-color: var(--institute-blue-dark); }
+.hover\:text-institute-blue:hover { color: var(--institute-blue); }
+.hover\:text-institute-blue-dark:hover { color: var(--institute-blue-dark); }
+.hover\:border-institute-blue:hover { border-color: var(--institute-blue); }

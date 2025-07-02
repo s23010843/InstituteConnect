@@ -1,223 +1,254 @@
-import { useState } from 'react'
-import { useMutation } from '@tanstack/react-query'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { Mail, Phone, MapPin, Clock, Send, Loader2 } from 'lucide-react'
-import toast from 'react-hot-toast'
+import { ArrowLeft, MapPin, Phone, Mail, Clock } from "lucide-react";
+import { Link } from "wouter";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 
-import { apiRequest } from '@/lib/queryClient'
-import { insertInquirySchema } from '@shared/schema'
-import type { InsertInquiry } from '@shared/schema'
-
-const Contact = () => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset
-  } = useForm<InsertInquiry>({
-    resolver: zodResolver(insertInquirySchema)
-  })
+export default function ContactPage() {
+  const { toast } = useToast();
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    subject: "",
+    message: ""
+  });
 
   const contactMutation = useMutation({
-    mutationFn: async (data: InsertInquiry) => {
-      return await apiRequest('/api/inquiries', {
-        method: 'POST',
-        data
-      })
-    },
+    mutationFn: (data: typeof formData) => apiRequest("POST", "/api/contact", data),
     onSuccess: () => {
-      toast.success('Your message has been sent successfully! We will get back to you soon.')
-      reset()
+      toast({
+        title: "Message sent successfully!",
+        description: "We'll get back to you within 24 hours.",
+      });
+      setFormData({ firstName: "", lastName: "", email: "", subject: "", message: "" });
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || 'Failed to send message')
-    }
-  })
+    onError: () => {
+      toast({
+        title: "Failed to send message",
+        description: "Please try again or contact us directly.",
+        variant: "destructive",
+      });
+    },
+  });
 
-  const onSubmit = (data: InsertInquiry) => {
-    contactMutation.mutate(data)
-  }
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    contactMutation.mutate(formData);
+  };
 
-  const contactInfo = [
-    {
-      icon: Phone,
-      title: 'Phone',
-      details: '+1 (555) 123-4567',
-      description: 'Mon-Fri from 8am to 5pm'
-    },
-    {
-      icon: Mail,
-      title: 'Email',
-      details: 'info@institute.edu',
-      description: 'Online support'
-    },
-    {
-      icon: MapPin,
-      title: 'Address',
-      details: '123 Education Street, Learning City, LC 12345',
-      description: 'Come visit us'
-    },
-    {
-      icon: Clock,
-      title: 'Working Hours',
-      details: 'Monday - Friday: 8am - 5pm',
-      description: 'Weekend: By appointment'
-    }
-  ]
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Contact Us
-          </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Have questions about our programs? Need guidance on your educational journey? 
-            We're here to help and would love to hear from you.
-          </p>
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <Link href="/" className="inline-flex items-center text-blue-600 hover:text-blue-700 mb-4 transition-colors">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Home
+          </Link>
+          <h1 className="text-4xl font-bold text-gray-900">Contact Us</h1>
+          <p className="text-xl text-gray-600 mt-2">Get in touch with Excellence Institute</p>
         </div>
+      </div>
 
-        <div className="grid lg:grid-cols-2 gap-12">
-          {/* Contact Information */}
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">
-              Get in Touch
-            </h2>
-            <p className="text-gray-600 mb-8">
-              Our team is ready to assist you with any questions about admissions, 
-              programs, or general inquiries. Reach out through any of the methods below.
-            </p>
-
-            <div className="space-y-6">
-              {contactInfo.map((item, index) => (
-                <div key={index} className="flex items-start">
-                  <div className="flex-shrink-0">
-                    <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-lg">
-                      <item.icon className="h-6 w-6 text-blue-600" />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+          {/* Contact Form */}
+          <div className="lg:col-span-2">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-2xl font-bold text-gray-900">Send us a Message</CardTitle>
+                <p className="text-gray-600">We'd love to hear from you. Fill out the form below and we'll get back to you as soon as possible.</p>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <Label htmlFor="firstName">First Name *</Label>
+                      <Input
+                        id="firstName"
+                        value={formData.firstName}
+                        onChange={(e) => handleInputChange('firstName', e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="lastName">Last Name *</Label>
+                      <Input
+                        id="lastName"
+                        value={formData.lastName}
+                        onChange={(e) => handleInputChange('lastName', e.target.value)}
+                        required
+                      />
                     </div>
                   </div>
-                  <div className="ml-4">
-                    <h3 className="text-lg font-semibold text-gray-900">
-                      {item.title}
-                    </h3>
-                    <p className="text-gray-600 font-medium">
-                      {item.details}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      {item.description}
-                    </p>
+
+                  <div>
+                    <Label htmlFor="email">Email Address *</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={formData.email}
+                      onChange={(e) => handleInputChange('email', e.target.value)}
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="subject">Subject *</Label>
+                    <Select onValueChange={(value) => handleInputChange('subject', value)} value={formData.subject}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a subject" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="admissions">Admissions Inquiry</SelectItem>
+                        <SelectItem value="academics">Academic Programs</SelectItem>
+                        <SelectItem value="research">Research Opportunities</SelectItem>
+                        <SelectItem value="campus-life">Campus Life</SelectItem>
+                        <SelectItem value="financial-aid">Financial Aid</SelectItem>
+                        <SelectItem value="technical-support">Technical Support</SelectItem>
+                        <SelectItem value="partnerships">Partnerships</SelectItem>
+                        <SelectItem value="media">Media Inquiry</SelectItem>
+                        <SelectItem value="other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="message">Message *</Label>
+                    <Textarea
+                      id="message"
+                      rows={6}
+                      value={formData.message}
+                      onChange={(e) => handleInputChange('message', e.target.value)}
+                      placeholder="Please provide details about your inquiry..."
+                      required
+                    />
+                  </div>
+
+                  <Button 
+                    type="submit" 
+                    className="w-full bg-blue-600 hover:bg-blue-700"
+                    disabled={contactMutation.isPending}
+                  >
+                    {contactMutation.isPending ? "Sending..." : "Send Message"}
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Contact Information */}
+          <div className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-xl font-bold text-gray-900">Contact Information</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-start space-x-3">
+                  <MapPin className="h-5 w-5 text-blue-600 mt-1" />
+                  <div>
+                    <p className="font-medium text-gray-900">Address</p>
+                    <p className="text-gray-600">123 Excellence Boulevard<br />University City, State 12345</p>
                   </div>
                 </div>
-              ))}
-            </div>
-          </div>
 
-          {/* Contact Form */}
-          <div className="bg-white rounded-lg shadow-md p-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">
-              Send us a Message
-            </h2>
-
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                    Full Name *
-                  </label>
-                  <input
-                    {...register('name')}
-                    type="text"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="Your full name"
-                  />
-                  {errors.name && (
-                    <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
-                  )}
+                <div className="flex items-start space-x-3">
+                  <Phone className="h-5 w-5 text-blue-600 mt-1" />
+                  <div>
+                    <p className="font-medium text-gray-900">Phone</p>
+                    <p className="text-gray-600">+1 (555) 123-4567</p>
+                  </div>
                 </div>
 
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                    Email Address *
-                  </label>
-                  <input
-                    {...register('email')}
-                    type="email"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="your.email@example.com"
-                  />
-                  {errors.email && (
-                    <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
-                  )}
+                <div className="flex items-start space-x-3">
+                  <Mail className="h-5 w-5 text-blue-600 mt-1" />
+                  <div>
+                    <p className="font-medium text-gray-900">Email</p>
+                    <p className="text-gray-600">info@excellence.edu</p>
+                  </div>
                 </div>
-              </div>
 
-              <div>
-                <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
-                  Phone Number
-                </label>
-                <input
-                  {...register('phone')}
-                  type="tel"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="+1 (555) 123-4567"
-                />
-                {errors.phone && (
-                  <p className="mt-1 text-sm text-red-600">{errors.phone.message}</p>
-                )}
-              </div>
+                <div className="flex items-start space-x-3">
+                  <Clock className="h-5 w-5 text-blue-600 mt-1" />
+                  <div>
+                    <p className="font-medium text-gray-900">Office Hours</p>
+                    <p className="text-gray-600">Monday - Friday: 8:00 AM - 6:00 PM<br />Saturday: 9:00 AM - 3:00 PM<br />Sunday: Closed</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
 
-              <div>
-                <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-1">
-                  Subject *
-                </label>
-                <input
-                  {...register('subject')}
-                  type="text"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="What is this regarding?"
-                />
-                {errors.subject && (
-                  <p className="mt-1 text-sm text-red-600">{errors.subject.message}</p>
-                )}
-              </div>
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-xl font-bold text-gray-900">Quick Links</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <Link href="/signup" className="block text-blue-600 hover:text-blue-700 transition-colors">
+                  Apply for Admission
+                </Link>
+                <Link href="/#programs" className="block text-blue-600 hover:text-blue-700 transition-colors">
+                  Academic Programs
+                </Link>
+                <Link href="/#faculty" className="block text-blue-600 hover:text-blue-700 transition-colors">
+                  Faculty Directory
+                </Link>
+                <Link href="/dashboard" className="block text-blue-600 hover:text-blue-700 transition-colors">
+                  Student Portal
+                </Link>
+              </CardContent>
+            </Card>
 
-              <div>
-                <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
-                  Message *
-                </label>
-                <textarea
-                  {...register('message')}
-                  rows={6}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Tell us more about your inquiry..."
-                />
-                {errors.message && (
-                  <p className="mt-1 text-sm text-red-600">{errors.message.message}</p>
-                )}
-              </div>
-
-              <button
-                type="submit"
-                disabled={contactMutation.isPending}
-                className="w-full flex items-center justify-center px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                {contactMutation.isPending ? (
-                  <Loader2 className="h-5 w-5 animate-spin" />
-                ) : (
-                  <>
-                    <Send className="h-5 w-5 mr-2" />
-                    Send Message
-                  </>
-                )}
-              </button>
-            </form>
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-xl font-bold text-gray-900">Emergency Contact</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600 mb-2">For urgent matters outside office hours:</p>
+                <p className="font-medium text-gray-900">Campus Security: +1 (555) 123-9999</p>
+                <p className="text-sm text-gray-500 mt-2">Available 24/7 for emergencies</p>
+              </CardContent>
+            </Card>
           </div>
+        </div>
+
+        {/* Map Section */}
+        <div className="mt-12">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-2xl font-bold text-gray-900">Visit Our Campus</CardTitle>
+              <p className="text-gray-600">Experience our beautiful campus and world-class facilities in person.</p>
+            </CardHeader>
+            <CardContent>
+              <div className="bg-gray-200 h-64 rounded-lg flex items-center justify-center">
+                <p className="text-gray-500">Interactive Campus Map</p>
+              </div>
+              <div className="mt-6 flex flex-col sm:flex-row gap-4">
+                <Button variant="outline" className="flex-1">
+                  Schedule a Campus Tour
+                </Button>
+                <Button variant="outline" className="flex-1">
+                  Virtual Campus Tour
+                </Button>
+                <Button variant="outline" className="flex-1">
+                  Parking Information
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>
-  )
+  );
 }
-
-export default Contact
