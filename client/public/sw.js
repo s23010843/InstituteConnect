@@ -6,6 +6,7 @@ const DYNAMIC_CACHE_NAME = 'excellence-dynamic-v1';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
+  '/offline',
   '/manifest.json',
   'https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Roboto+Slab:wght@400;500;700&display=swap',
   'https://fonts.googleapis.com/icon?family=Material+Icons',
@@ -112,8 +113,15 @@ self.addEventListener('fetch', (event) => {
           .catch(() => {
             // Return offline page for navigation requests
             if (request.mode === 'navigate') {
-              return caches.match('/');
+              return caches.match('/offline').then(offlinePage => {
+                return offlinePage || caches.match('/');
+              });
             }
+            // Return a generic offline response for other requests
+            return new Response('Offline', { 
+              status: 503, 
+              statusText: 'Service Unavailable' 
+            });
           });
       })
   );

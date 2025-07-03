@@ -19,6 +19,8 @@ import Signup from "@/pages/signup";
 import Error404 from "@/pages/error-404";
 import Error403 from "@/pages/error-403";
 import Error500 from "@/pages/error-500";
+import Error502 from "@/pages/error-502";
+import OfflinePage from "@/pages/offline";
 import NotFound from "@/pages/not-found";
 import ProtectedRoute from "@/components/protected-route";
 
@@ -43,6 +45,8 @@ function App() {
                 <Route path="/error/404" component={Error404} />
                 <Route path="/error/403" component={Error403} />
                 <Route path="/error/500" component={Error500} />
+                <Route path="/error/502" component={Error502} />
+                <Route path="/offline" component={OfflinePage} />
                 <Route path="/dashboard">
                   <ProtectedRoute>
                     <Dashboard />
