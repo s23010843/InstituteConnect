@@ -1,11 +1,7 @@
 
+import { User } from '@shared/schema';
+
 // Simple auth utilities for local development
-export interface User {
-  id: string;
-  email: string;
-  name: string;
-  role: 'student' | 'faculty' | 'admin';
-}
 
 export const getCurrentUser = (): User | null => {
   const userStr = localStorage.getItem('current_user');

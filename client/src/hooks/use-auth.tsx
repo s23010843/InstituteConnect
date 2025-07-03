@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { User } from '@shared/schema';
 import { 
   getCurrentUser, 
   setCurrentUser, 
@@ -8,12 +9,6 @@ import {
   signInWithGoogle as signInWithGoogleAuth,
   signInWithApple as signInWithAppleAuth
 } from '@/lib/auth';
-
-interface User {
-  id: string;
-  email: string;
-  name: string;
-}
 
 interface AuthContextType {
   user: User | null;
@@ -63,6 +58,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         name: 'Test User',
         email: email,
         avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`,
+        provider: 'google',
+        providerId: '1',
+        role: 'student',
+        isStudent: true,
+        isFaculty: false,
+        isAdmin: false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
       setUser(mockUser);
       setCurrentUser(mockUser);
@@ -83,6 +86,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         name: name,
         email: email,
         avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`,
+        provider: 'google',
+        providerId: Date.now().toString(),
+        role: 'student',
+        isStudent: true,
+        isFaculty: false,
+        isAdmin: false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
       setUser(mockUser);
       setCurrentUser(mockUser);
@@ -104,6 +115,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         name: 'Google User',
         email: 'user@gmail.com',
         avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=google',
+        provider: 'google',
+        providerId: 'google-' + Date.now(),
+        role: 'student',
+        isStudent: true,
+        isFaculty: false,
+        isAdmin: false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
       setUser(mockUser);
       setCurrentUser(mockUser);
@@ -125,6 +144,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         name: 'Apple User',
         email: 'user@icloud.com',
         avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=apple',
+        provider: 'apple',
+        providerId: 'apple-' + Date.now(),
+        role: 'student',
+        isStudent: true,
+        isFaculty: false,
+        isAdmin: false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
       setUser(mockUser);
       setCurrentUser(mockUser);

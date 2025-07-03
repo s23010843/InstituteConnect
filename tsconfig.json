@@ -1,6 +1,14 @@
 {
   "include": ["client/src/**/*", "shared/**/*", "server/**/*"],
-  "exclude": ["node_modules", "build", "dist", "**/*.test.ts"],
+  "exclude": [
+    "node_modules", 
+    "build", 
+    "dist", 
+    "**/*.test.ts",
+    "node_modules/@types/babel__traverse/**/*",
+    "node_modules/@types/d3-scale/**/*",
+    "node_modules/@types/d3-shape/**/*"
+  ],
   "compilerOptions": {
     "incremental": true,
     "tsBuildInfoFile": "./node_modules/typescript/tsbuildinfo",
@@ -8,7 +16,7 @@
     "module": "ESNext",
     "target": "ES2020",
     "strict": true,
-    "lib": ["esnext"],
+    "lib": ["esnext", "dom", "dom.iterable"],
     "jsx": "preserve",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
@@ -17,6 +25,7 @@
     "moduleResolution": "bundler",
     "baseUrl": ".",
     "resolveJsonModule": true,
+    "forceConsistentCasingInFileNames": true,
     "paths": {
       "@/*": ["./client/src/*"],
       "@shared/*": ["./shared/*"]

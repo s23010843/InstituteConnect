@@ -40,7 +40,7 @@ async function startExcellenceInstituteServer() {
       }
     });
 
-    server.listen(SERVER_PORT, 'localhost', () => {
+    server.listen(Number(SERVER_PORT), 'localhost', () => {
       console.log(`✅ Excellence Institute server running on http://localhost:${SERVER_PORT}`);
       console.log(`📚 API endpoints available at http://localhost:${SERVER_PORT}/api`);
       console.log(`🌐 Frontend available at http://localhost:${SERVER_PORT}`);

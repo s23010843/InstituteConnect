@@ -6,6 +6,7 @@ export interface User {
   avatar?: string;
   provider: 'google' | 'apple';
   providerId: string;
+  role: 'student' | 'faculty' | 'admin';
   isStudent: boolean;
   isFaculty: boolean;
   isAdmin: boolean;
@@ -30,6 +31,8 @@ export interface Program {
   department: string;
   credits: number;
   tuition: number;
+  icon?: string;
+  color?: string;
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -40,6 +43,7 @@ export interface Faculty {
   name: string;
   title: string;
   department: string;
+  specialization?: string;
   email: string;
   phone?: string;
   bio: string;
