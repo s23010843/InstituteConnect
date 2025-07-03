@@ -6,14 +6,17 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci --omit=dev
+# Install all dependencies (including dev dependencies for build)
+RUN npm ci
 
 # Copy source code
 COPY . .
 
 # Build the application
-RUN npm run build:prod
+RUN npm run build
+
+# Remove dev dependencies after build to reduce image size
+RUN npm prune --omit=dev
 
 # Expose port (Railway and other platforms may set PORT env var)
 EXPOSE ${PORT:-8080}
